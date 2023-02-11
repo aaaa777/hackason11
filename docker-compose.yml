@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  webapi:
+    build: docker/fastapi
+    container_name: fastapi
+    ports:
+      - 80:8000
+    volumes:
+      - ./.env:/app/.env
+  
+
+networks:
+  backend:
+
+  
+    
