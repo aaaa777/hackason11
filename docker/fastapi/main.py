@@ -1,8 +1,10 @@
+# utils
 import requests
 from datetime import datetime
 import uvicorn
 from typing import Union, Dict, List
 
+# FastAPI
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
@@ -16,26 +18,11 @@ load_dotenv()
 import os
 import openai
 
+# load env
 openai.api_key = os.getenv("OPENAI_TOKEN")
 voicevox_api_token = os.getenv("VOICEVOX_API_TOKEN")
 download_dir = os.getenv("DOWNLOAD_PATH")
 server_hostname = os.getenv("HOSTNAME")
-#start_sequence = "\nAI:"
-#restart_sequence = "\nHuman: "
-
-# response = openai.Completion.create(
-#   model="text-davinci-003",
-#   prompt="Human: おはよう",
-#   temperature=0.9,
-#   max_tokens=150,
-#   top_p=1,
-#   frequency_penalty=0,
-#   presence_penalty=0.6,
-#   stop=[" Human:", " AI:"]
-# )
-# print(response)
-
-# print(response['choices'][0]['text'].replace('\n', ''))
 
 # gptリクエストモデル
 class PromptRequest(BaseModel):
@@ -48,11 +35,12 @@ class PromptResponse(BaseModel):
 # t2tリクエストモデル
 class Text2TalkRequest(BaseModel):
     text: str
+    speaker_id: int = 3
 
 # t2tレスポンスモデル
 class Text2TalkResponse(BaseModel):
     text: str
-    resource: Dict[str, str]
+    src_wav: str 
 
 
 # FastAPIサーバー部分
@@ -126,25 +114,29 @@ async def chatgpt_send(request: PromptRequest):
 # VoiceVox合成
 @app.post("/api/voicevox/send", response_model=Text2TalkResponse)
 async def voicevox_compose(request: Text2TalkRequest):
-    filename = dl_voicevox(text=request.text)
+
+    # 音声を合成して保存後、ファイル名を取得
+    filename = dl_voicevox(text=request.text, speaker_id=request.speaker_id)
+
+    # 合成音声のリンクを出力
     return {
         "text": request.text,
-        "resource": {
-            "wav": "http://" + server_hostname + "/res/voice/" + filename
-        }
+        "src_wav": "http://" + server_hostname + "/res/voice/" + filename
     }
 
 # voice download
 @app.get("/res/voice/{filename}")
 async def download_voice(filename: str):
+
+    # ファイル保存場所を取得
     download_file_path = os.path.join(download_dir, filename)
-    response = FileResponse(
+
+    # ファイル送信
+    return FileResponse(
         path=download_file_path,
         filename=filename
     )
-    return response
 
 # launch
-
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
