@@ -71,7 +71,7 @@ def send_prompt(prompt: str):
     return response['choices'][0]['text'].replace('\n', '')
 
 # 非公式API使用
-def dl_voicevox(text: str, speaker_id=3: int):
+def dl_voicevox(text: str, speaker_id: int=3):
 
     # 非公式API用 リクエストボディ
     request_body = {
