@@ -15,8 +15,8 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-      - /etc/letsencrypt:/etc/letsencrypt
+      - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - /var/www/html:/var/www/html
   
   certbot:
