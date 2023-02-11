@@ -6,6 +6,7 @@ from typing import Union, Dict, List
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
+from starlette.middleware.cors import CORSMiddleware
 
 # .env ファイルをロードして環境変数へ反映
 from dotenv import load_dotenv
@@ -57,6 +58,16 @@ class Text2TalkResponse(BaseModel):
 # FastAPIサーバー部分
 app = FastAPI()
 
+# avoid CORS
+# https://qiita.com/satto_sann/items/0e1f5dbbe62efc612a78
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,   # 追記により追加
+    allow_methods=["*"],      # 追記により追加
+    allow_headers=["*"]       # 追記により追加
+)
+
 # OpenAIにPrompt送る
 def send_prompt(prompt: str):
     response = openai.Completion.create(
@@ -71,21 +82,30 @@ def send_prompt(prompt: str):
     )
     return response['choices'][0]['text'].replace('\n', '')
 
-def dl_voicevox(text: str):
+# 非公式API使用
+def dl_voicevox(text: str, speaker_id=3: int):
+
+    # 非公式API用 リクエストボディ
     request_body = {
         "key": voicevox_api_token,
-        "text": text
+        "text": text,
+        "speaker": speaker_id
     }
 
+    # 非公式API レスポンス
     response = requests.post(
         "https://api.su-shiki.com/v2/voicevox/audio/",
         request_body
     )
+
+    # レスポンスのWAVファイルを名前つけて既定のディレクトリに保存
+    # note: UUIDみたいなの振ったほうが良いかも、同じ秒数でファイル名衝突する
     save_file_name = datetime.now().strftime("%Y%m%d_%H%M%S") + ".wav"
     save_file_path = os.path.join(download_dir, save_file_name)
     with open(save_file_path, 'wb') as save_file:
         save_file.write(response.content)
     
+    # 保存したときのファイル名を返す
     return save_file_name
 
 # テスト用
@@ -115,8 +135,8 @@ async def voicevox_compose(request: Text2TalkRequest):
     }
 
 # voice download
-@app.get("/res/voice/{filename}"):
-async def download_voice(filename: str)
+@app.get("/res/voice/{filename}")
+async def download_voice(filename: str):
     download_file_path = os.path.join(download_dir, filename)
     response = FileResponse(
         path=download_file_path,

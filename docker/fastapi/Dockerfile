@@ -9,4 +9,4 @@ RUN apt update \
 
 COPY ./main.py /app/
 
-ENTRYPOINT [ "python3", "main.py" ]
+ENTRYPOINT [ "python3", "/app/main.py" ]
