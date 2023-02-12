@@ -5,12 +5,20 @@ async function submitForm(e) {
     const prompt = formButton.value;
     formButton.value = '';
 
+    // 入力時
     if(prompt) {
+
+        // 文章を反映
         addMessageYou(prompt);
         const zundaResponseElement = addMessageZunda('<div class="loader">Loading...</div>');
         console.log(zundaResponseElement);
+
+        // 返答で上書き
         const responseText = await requestGpt(prompt);
         modMessage(zundaResponseElement, responseText);
+
+        // 音声を再生
+        playVoice(zundaResponseElement, responseText);
     }
 
 }
@@ -19,13 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.btn').addEventListener('click', submitForm);
 });
 
+// not use
 window.addEventListener('load', (event) => {
-    // dirtyHeightFix();
 });
 
-const playVoice = async (text) => {
-    const voice_url = requestVoice(text)
-    
+const playVoice = async (zundaResponseElement, text) => {
+    const voice_url = await requestVoice(text, 3);
+    let divElement = document.createElement('div');
+    let audioElement = document.createElement('audio');
+    audioElement.setAttribute("src", voice_url);
+    divElement.append(audioElement);
+    zundaResponseElement.append(divElement);
+    audioElement.play();
 }
 
 
@@ -40,9 +53,12 @@ const requestVoice = async (text, speaker_id) => {
             body: JSON.stringify({ text, speaker_id })
         }
     )
-    .then(response => response.json)
+    .then(response => {
+        return response.json();
+    })
     .then(json => {
-        return json["res_wav"]
+        console.log(json);
+        return json["src_wav"]
     });
     console.log(res_url);
     return res_url;
@@ -100,28 +116,4 @@ const requestGpt = async (prompt) => {
         return response_json["text"];
     });
     return text;
-}
-
-// 描画完了後に呼ばれる関数
-const dirtyHeightFix = async () => {
-    const appElement = document.getElementById('app'); // 全体のコンテナ(Reactのroot)
-  
-    // 高さを適当にゴリゴリいじってサイズを直す
-    // スクリプト上の描画処理がレンダリングにいつ反映されるかわからんので数回やる(キモい)
-    for (let i = 0; i < 3; i++) {
-      const height = appElement.getBoundingClientRect().height;
-      document.body.style.height = `${height + 1}px`;
-      await new Promise((r) => setTimeout(r, 100)); // 100ms待つ
-    }
-    document.body.style.height = '';
-  
-    // スクロールバーが出る高さならこれでは直らないので、
-    // さらにガガっといじったら何か直る
-    if (appElement.getBoundingClientRect().height > 600) {
-      appElement.style.height = '600px';
-      appElement.style.overflowY = 'hidden';
-      await new Promise((r) => setTimeout(r, 100)); // 100ms待つ
-      appElement.style.height = '';
-      appElement.style.overflowY = '';
-    }
 }
