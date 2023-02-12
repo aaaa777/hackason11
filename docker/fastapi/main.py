@@ -146,7 +146,7 @@ async def voicevox_compose(request: Text2TalkRequest):
     # 合成音声のリンクを出力
     return {
         "text": request.text,
-        "src_wav": "http://" + server_hostname + "/res/voice/" + filename
+        "src_wav": "https://" + server_hostname + "/res/voice/" + filename
     }
 
 # voice download
