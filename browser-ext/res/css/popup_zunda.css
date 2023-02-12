@@ -1,0 +1,31 @@
+/* body {
+    min-width:400px;max-width:400px;width:400px;min-height:1000px;max-height:1000px;height:1000px;
+    overflow: hidden;
+} */
+
+.background {
+    background-color: rgb(172, 206, 105);
+    width: 400px;
+}
+
+.background .log-area {
+    background-color: #d8dcb4;
+    /* z-index: -10; */
+    background-image: url("../img/zunda_400x600.png");
+}
+
+.log-area {
+    height: 500px;
+    max-height: 500px;
+    min-height: 500px;
+    overflow-y: scroll;
+}
+
+.log-area .chat {
+    opacity: 0.9;
+}
+
+.log-area .row {
+    margin-left: 0;
+    margin-right: 0;
+}
