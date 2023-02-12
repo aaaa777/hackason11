@@ -28,6 +28,7 @@ server_hostname = os.getenv("HOSTNAME")
 class PromptRequest(BaseModel):
     prompt: str
     max_tokens: int = 250
+    fix_prompt: bool = True
 
 # gptレスポンスモデル
 class PromptResponse(BaseModel):
@@ -37,7 +38,6 @@ class PromptResponse(BaseModel):
 class Text2TalkRequest(BaseModel):
     text: str
     speaker_id: int = 3
-    fix_prompt: bool = True
 
 # t2tレスポンスモデル
 class Text2TalkResponse(BaseModel):
