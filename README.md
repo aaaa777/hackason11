@@ -9,8 +9,7 @@
 
 リポジトリをダウンロードして、browser-extを選択すればOK
 
-参考URL
-https://blog.janjan.net/2020/04/01/chrome-load-non-package-extensions/
+ストアで公開まではできませんでした・・・！
 
 # Document
 
