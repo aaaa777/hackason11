@@ -102,13 +102,13 @@ def dl_voicevox(text: str, speaker_id: int=3):
     # 非公式API用 リクエストボディ
     request_body = {
         "key": voicevox_api_token,
-        "text": text,
-        "speaker": speaker_id
+        "text": text
+        # "speaker": speaker_id
     }
 
     # 非公式API レスポンス
     response = requests.post(
-        "https://api.su-shiki.com/v2/voicevox/audio/",
+        "https://api.su-shiki.com/v2/voicevox/audio/?speaker=" + speaker_id,
         request_body
     )
 
@@ -146,6 +146,7 @@ async def voicevox_compose(request: Text2TalkRequest):
     # 合成音声のリンクを出力
     return {
         "text": request.text,
+        # note: hardcoded hostname
         "src_wav": "https://" + "h11.hiuclubs.com" + "/res/voice/" + filename
     }
 
