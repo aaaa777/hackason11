@@ -23,7 +23,7 @@ https://github.com/aaaa777/hackason11/releases/tag/v0.0.1
 
 語尾が「なのだ」になっているのは → 指示をプロンプトに含めている
 
-WAVファイルの受け渡し方法 → 音声保存先URLを渡している、`/api/voicevox/send`にて
+WAVファイルの受け渡し方法 → 音声保存先URLを渡している、動的にaudioタグ作ってJSで#playしてます
 
 JSONの整形までプロンプトに含めると、コード量が削減されるのでは？
 
