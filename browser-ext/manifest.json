@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "version": "0.0.1",
-    "name": "[hackason11]ずんだもんSiri",
-    "description": "VoiceVoxずんだもんがあなたをサポートします",
+    "name": "[hackason11] Zundana",
+    "description": "VoiceVoxずんだもんとおしゃべりしよう！",
     "icons": {
         "16": "res/img/icon16.png",
         "48": "res/img/icon48.png",
@@ -13,6 +13,6 @@
         "default_popup": "html/popup.html"
     },
     "permissions": [
-        "https://h11.hiuclubs.com/*"
+        "https://*/*"
     ]
 }

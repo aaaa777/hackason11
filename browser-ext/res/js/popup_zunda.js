@@ -1,3 +1,4 @@
+// メッセージ送信
 async function submitForm(e) {
     console.log("click");
     const formButton = document.querySelector('.form-input');
@@ -22,7 +23,32 @@ window.addEventListener('load', (event) => {
     // dirtyHeightFix();
 });
 
+const playVoice = async (text) => {
+    const voice_url = requestVoice(text)
+    
+}
 
+
+const requestVoice = async (text, speaker_id) => {
+    const res_url = await fetch(
+        "https://h11.hiuclubs.com/api/voicevox/send",
+        {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text, speaker_id })
+        }
+    )
+    .then(response => response.json)
+    .then(json => {
+        return json["res_wav"]
+    });
+    console.log(res_url);
+    return res_url;
+}
+
+// 未実装
 const animNormalZunda = async () => {
     
 }
@@ -31,10 +57,8 @@ const animSpeakingZunda = async () => {
     
 }
 
+// メッセージを追加
 const addMessageZunda = (text) => {
-    // const logAreaElement = document.querySelector('.log-area');
-    // logAreaElement.innerHTML += messageElementText;
-    
     const messageElementText = '<div class="row justify-content-start"><div class="col-9 chat chat-zunda align-self-start m-1 p-1 mx-2 text-start text-wrap text-break text-light rounded-3 bg-success">' + text + "</div></div>";
     return addMessage(messageElementText, '.chat-zunda');
 

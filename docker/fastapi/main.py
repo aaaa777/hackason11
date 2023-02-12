@@ -108,7 +108,7 @@ def dl_voicevox(text: str, speaker_id: int=3):
 
     # 非公式API レスポンス
     response = requests.post(
-        "https://api.su-shiki.com/v2/voicevox/audio/?speaker=" + speaker_id,
+        "https://api.su-shiki.com/v2/voicevox/audio/?speaker=" + str(speaker_id),
         request_body
     )
 
