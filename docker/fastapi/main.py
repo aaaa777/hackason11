@@ -129,7 +129,7 @@ def api_test():
 # OpenAI、GPT利用
 @app.post("/api/chatgpt/send", response_model=PromptResponse)
 async def chatgpt_send(request: PromptRequest):
-    result_text = send_prompt(prompt=request.prompt, max_tokens=request.max_tokens, request.fix_prompt)
+    result_text = send_prompt(prompt=request.prompt, max_tokens=request.max_tokens, fix_prompt=request.fix_prompt)
     return {
         "text": result_text
     }
