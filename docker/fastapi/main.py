@@ -37,12 +37,12 @@ class PromptResponse(BaseModel):
 class Text2TalkRequest(BaseModel):
     text: str
     speaker_id: int = 3
+    fix_prompt: bool = True
 
 # t2tレスポンスモデル
 class Text2TalkResponse(BaseModel):
     text: str
-    src_wav: str 
-
+    src_wav: str
 
 # FastAPIサーバー部分
 app = FastAPI()
@@ -57,13 +57,31 @@ app.add_middleware(
     allow_headers=["*"]       # 追記により追加
 )
 
-def inject_prompt(prompt: str):
+# promptを修正する
+def inject_prompt(prompt: str, speaker_id: int = 3):
+    fix_prompt = {
+        "global": {
+            "prefix_text": "",
+            "suffix_text": "。"
+        },
+        3: {
+            "prefix_text": "語尾に「なのだ」をつけてください",
+            "suffix_text": ""
+        }
+    }
+    prompt = fix_prompt["global"]["prefix_text"] + prompt + fix_prompt["global"]["suffix_text"]
+    prompt = fix_prompt[speaker_id]["prefix_text"] + prompt + fix_prompt[speaker_id]["suffix_text"]
+    
     return prompt
 
 # OpenAIにPrompt送る
-def send_prompt(prompt: str, max_tokens: int):
-    prompt = inject_prompt(prompt)
+def send_prompt(prompt: str, max_tokens: int, fix_prompt: bool):
 
+    # プロンプトの修正
+    if(fix_prompt):
+        prompt = inject_prompt(prompt, speaker_id)
+
+    # OpenAIにリクエストを送る
     response = openai.Completion.create(
         model="text-davinci-003",
         prompt=prompt,
@@ -93,8 +111,7 @@ def dl_voicevox(text: str, speaker_id: int=3):
     )
 
     # レスポンスのWAVファイルを名前つけて既定のディレクトリに保存
-    # note: UUIDみたいなの振ったほうが良いかも、同じ秒数でファイル名衝突する
-    save_file_name = datetime.now().strftime("%Y%m%d_%H%M%S") + ".wav"
+    save_file_name = datetime.now().strftime("%Y%m%d%H%M%S_") + ("%04d" % (int)(random.random() * 10_000)) + ".wav"
     save_file_path = os.path.join(download_dir, save_file_name)
     with open(save_file_path, 'wb') as save_file:
         save_file.write(response.content)
