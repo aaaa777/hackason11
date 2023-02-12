@@ -29,6 +29,7 @@ class PromptRequest(BaseModel):
     prompt: str
     max_tokens: int = 250
     fix_prompt: bool = True
+    speaker_id: int = 3
 
 # gptレスポンスモデル
 class PromptResponse(BaseModel):
@@ -75,7 +76,7 @@ def inject_prompt(prompt: str, speaker_id: int = 3):
     return prompt
 
 # OpenAIにPrompt送る
-def send_prompt(prompt: str, max_tokens: int, fix_prompt: bool):
+def send_prompt(prompt: str, max_tokens: int, speaker_id: int, fix_prompt: bool):
 
     # プロンプトの修正
     if(fix_prompt):
@@ -129,7 +130,7 @@ def api_test():
 # OpenAI、GPT利用
 @app.post("/api/chatgpt/send", response_model=PromptResponse)
 async def chatgpt_send(request: PromptRequest):
-    result_text = send_prompt(prompt=request.prompt, max_tokens=request.max_tokens, fix_prompt=request.fix_prompt)
+    result_text = send_prompt(prompt=request.prompt, max_tokens=request.max_tokens, speaker_id=request.speaker_id, fix_prompt=request.fix_prompt)
     return {
         "text": result_text
     }
