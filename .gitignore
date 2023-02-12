@@ -1,3 +1,5 @@
 .env
 
 hackason11
+
+*.pem
