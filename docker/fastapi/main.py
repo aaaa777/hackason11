@@ -27,6 +27,7 @@ server_hostname = os.getenv("HOSTNAME")
 # gptリクエストモデル
 class PromptRequest(BaseModel):
     prompt: str
+    max_tokens: int = 250
 
 # gptレスポンスモデル
 class PromptResponse(BaseModel):
@@ -56,13 +57,18 @@ app.add_middleware(
     allow_headers=["*"]       # 追記により追加
 )
 
+def inject_prompt(prompt: str):
+    return prompt
+
 # OpenAIにPrompt送る
-def send_prompt(prompt: str):
+def send_prompt(prompt: str, max_tokens: int):
+    prompt = inject_prompt(prompt)
+
     response = openai.Completion.create(
         model="text-davinci-003",
         prompt=prompt,
         temperature=0.9,
-        max_tokens=150,
+        max_tokens=max_tokens,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0.6,
@@ -97,8 +103,8 @@ def dl_voicevox(text: str, speaker_id: int=3):
     return save_file_name
 
 # テスト用
-@app.get("/")
-def root():
+@app.get("/api/test")
+def api_test():
     a = "a"
     b = "b" + a
     return {"hello world": b}
@@ -106,7 +112,7 @@ def root():
 # OpenAI、GPT利用
 @app.post("/api/chatgpt/send", response_model=PromptResponse)
 async def chatgpt_send(request: PromptRequest):
-    result_text = send_prompt(request.prompt)
+    result_text = send_prompt(prompt=request.prompt, max_tokens=request.max_tokens)
     return {
         "text": result_text
     }
